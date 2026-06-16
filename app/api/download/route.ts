@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import JSZip from "jszip";
 import { supabaseAdmin, type Client } from "@/lib/supabase";
 import { clientIdFromRequest } from "@/lib/auth";
-import { buildProjectZip, projectDirExists } from "@/lib/download-archive";
+import { fetchCodebase } from "@/lib/codebase-store";
 import { BRAND } from "@/lib/brand";
 
 export const runtime = "nodejs";
 
-// Streams the ENTIRE project folder as a .zip — ONLY for clients with granted access.
+// Streams the project as a .zip — ONLY for clients with granted access.
+// Sources from Supabase `project_files` (deploy-safe: works on serverless hosts
+// where there is no local filesystem). Falls back to local files in dev.
 export async function GET(req: NextRequest) {
   const id = clientIdFromRequest(req);
   if (!id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -21,14 +24,19 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Access not granted" }, { status: 403 });
   }
 
-  if (!projectDirExists()) {
+  const files = await fetchCodebase();
+  if (files.length === 0) {
     return NextResponse.json(
-      { error: "Project files are not available on the server." },
+      { error: "Project files are not available." },
       { status: 500 }
     );
   }
 
-  const buf = await buildProjectZip();
+  const zip = new JSZip();
+  const folder = zip.folder(BRAND.product.id) ?? zip;
+  for (const f of files) folder.file(f.path, f.content);
+
+  const buf = await zip.generateAsync({ type: "uint8array", compression: "DEFLATE" });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return new NextResponse(buf as any, {
     headers: {

