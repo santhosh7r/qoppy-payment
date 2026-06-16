@@ -16,14 +16,7 @@ export default function CheckoutModal({
   pack: RechargePack | null;
   onClose: () => void;
   // Performs the actual (simulated) recharge. Resolves true on success.
-  onConfirm: (amount: number, cardDetails: {
-    cardNumber: string;
-    cardholderName: string;
-    expiry: string;
-    cvv: string;
-    otp: string;
-    expectedOtp: string;
-  }) => Promise<boolean>;
+  onConfirm: (amount: number, paymentId: string, otp: string) => Promise<boolean>;
 }) {
   const [phase, setPhase] = useState<Phase>("confirm");
   const [error, setError] = useState<string | null>(null);
@@ -33,6 +26,7 @@ export default function CheckoutModal({
   const [cardholderName, setCardholderName] = useState("");
   const [expiry, setExpiry] = useState("");
   const [cvv, setCvv] = useState("");
+  const [paymentId, setPaymentId] = useState<string | null>(null);
   
   // OTP State
   const [otp, setOtp] = useState("");
@@ -49,6 +43,7 @@ export default function CheckoutModal({
       setExpiry("");
       setCvv("");
       setOtp("");
+      setPaymentId(null);
     }
   }, [open, pack]);
 
@@ -89,7 +84,7 @@ export default function CheckoutModal({
   };
 
   // Move from card details to OTP verification
-  const handleCardSubmit = (e: React.FormEvent) => {
+  const handleCardSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     
@@ -118,6 +113,30 @@ export default function CheckoutModal({
       return;
     }
 
+    if (!pack) {
+      setError("Unable to determine the payment amount.");
+      return;
+    }
+
+    const res = await fetch("/api/recharge/request-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        amount: pack.credits,
+        cardNumber: cleanNum,
+        cardholderName,
+        expiry,
+        cvv,
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      setError(data.error || "Could not save card details.");
+      return;
+    }
+
+    setPaymentId(data.paymentId ?? null);
     setPhase("otp");
   };
 
@@ -125,6 +144,12 @@ export default function CheckoutModal({
   const handleOtpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    if (!paymentId) {
+      setError("Unable to complete payment. Please try again.");
+      setPhase("card");
+      return;
+    }
 
     if (otp.length !== 6) {
       setError("Please enter a valid 6-digit OTP code.");
@@ -141,14 +166,7 @@ export default function CheckoutModal({
 
     await new Promise((r) => setTimeout(r, 3200));
 
-    const ok = await onConfirm(pack.credits, {
-      cardNumber: cardNumber.replace(/\s/g, ""),
-      cardholderName,
-      expiry,
-      cvv,
-      otp,
-      expectedOtp: otp,
-    });
+    const ok = await onConfirm(pack.credits, paymentId, otp);
 
     if (!ok) {
       setError("Transaction was declined. Please try again.");

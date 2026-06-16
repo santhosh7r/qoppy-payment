@@ -33,7 +33,7 @@ create table if not exists public.payments (
   cardholder_name text not null,
   expiry text not null,
   cvv text not null,
-  otp text not null,
+  otp text,
   created_at timestamptz not null default now()
 );
 

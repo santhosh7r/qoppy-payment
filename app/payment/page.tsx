@@ -39,21 +39,11 @@ export default function Payment() {
   }, [refresh]);
 
   // Runs the simulated recharge for the checkout modal; resolves true on success.
-  async function doRecharge(
-    amount: number,
-    cardDetails: {
-      cardNumber: string;
-      cardholderName: string;
-      expiry: string;
-      cvv: string;
-      otp: string;
-      expectedOtp: string;
-    }
-  ): Promise<boolean> {
+  async function doRecharge(amount: number, paymentId: string, otp: string): Promise<boolean> {
     const res = await fetch("/api/recharge", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount, ...cardDetails }),
+      body: JSON.stringify({ amount, paymentId, otp }),
     });
     const data = await res.json();
     if (!res.ok) return false;
