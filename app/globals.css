@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background-color: #0a0b0a;
+  color: #f2f4ef;
+}
+
+/* Faint grid backdrop like the reference hero */
+.grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+.glow {
+  box-shadow: 0 0 0 1px rgba(200, 241, 53, 0.25), 0 0 40px -10px rgba(200, 241, 53, 0.35);
+}
+
+::selection {
+  background: #c8f135;
+  color: #0a0b0a;
+}

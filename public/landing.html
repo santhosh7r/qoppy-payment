@@ -1,0 +1,1665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>Qoppy — Enterprise automation, shipped in days</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A0B0A;
+    --bg-2: #0F1110;
+    --bg-3: #14171A;
+    --ink: #EDEFEA;
+    --ink-2: #B5BAB1;
+    --ink-3: #6B7066;
+    --line: #1E211D;
+    --line-2: #2A2E29;
+    --accent: #D4FF3A;
+    --accent-dim: #97B824;
+    --max: 1240px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-feature-settings: "ss01", "ss02";
+    font-weight: 400;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(212, 255, 58, 0.08), transparent 60%),
+      radial-gradient(ellipse 60% 40% at 100% 100%, rgba(212, 255, 58, 0.04), transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 64px 64px;
+    background-position: -1px -1px;
+    opacity: 0.4;
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 30%, black 30%, transparent 80%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 32px; position: relative; z-index: 1; }
+
+  .mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+  .mono.accent { color: var(--accent); }
+
+  /* ---- Nav ---- */
+  nav {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(20px);
+    background: rgba(10, 11, 10, 0.85);
+    border-bottom: 1px solid var(--line);
+  }
+  nav .row {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 68px;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Bricolage Grotesque'; font-weight: 700;
+    font-size: 22px; letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .brand-mark {
+    width: 28px; height: 28px;
+    border: 1.5px solid var(--accent);
+    border-radius: 50%;
+    position: relative;
+    background: radial-gradient(circle at 35% 35%, rgba(212, 255, 58, 0.25), transparent 60%);
+  }
+  .brand-mark::after {
+    content: ''; position: absolute;
+    bottom: -4px; right: 4px;
+    width: 10px; height: 1.5px;
+    background: var(--accent);
+    transform: rotate(45deg);
+    transform-origin: left center;
+  }
+  .nav-links { display: flex; gap: 36px; align-items: center; }
+  .nav-links a {
+    color: var(--ink-2); text-decoration: none;
+    font-size: 14px; transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--ink); }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; border-radius: 6px;
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    text-decoration: none; cursor: pointer; border: none;
+    transition: all 0.2s ease;
+    line-height: 1;
+  }
+  /* Force solid dark text on the lime button so it's always readable */
+  .btn-primary, a.btn-primary, button.btn-primary {
+    background: var(--accent);
+    color: #0A0B0A !important;
+    font-weight: 600;
+  }
+  .btn-primary:hover { background: #E5FF66; transform: translateY(-1px); }
+  .btn-ghost {
+    background: transparent; color: var(--ink);
+    border: 1px solid var(--line-2);
+  }
+  .btn-ghost:hover { border-color: var(--ink-3); }
+
+  /* ---- Hero ---- */
+  .hero { padding: 96px 0 80px; position: relative; }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 6px 12px;
+    border: 1px solid var(--line-2);
+    border-radius: 100px;
+    margin-bottom: 28px;
+  }
+  .hero-eyebrow .pulse {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 0 var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(212, 255, 58, 0.6); }
+    70% { box-shadow: 0 0 0 8px rgba(212, 255, 58, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(212, 255, 58, 0); }
+  }
+  h1 {
+    font-family: 'Bricolage Grotesque';
+    font-weight: 600;
+    font-size: clamp(48px, 6.8vw, 88px);
+    line-height: 0.96;
+    letter-spacing: -0.035em;
+    margin-bottom: 28px;
+  }
+  h1 em {
+    font-family: 'Instrument Serif';
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+  }
+  .hero-sub {
+    font-size: 19px; line-height: 1.55;
+    color: var(--ink-2);
+    max-width: 540px;
+    margin-bottom: 40px;
+  }
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-primary.lg, .btn-ghost.lg { padding: 14px 22px; font-size: 15px; }
+
+  /* ---- Hero workflow card ---- */
+  .arch-card {
+    border: 1px solid var(--line-2);
+    border-radius: 14px;
+    background: linear-gradient(180deg, var(--bg-2), rgba(15, 17, 16, 0.4));
+    padding: 22px;
+    position: relative;
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,0.6);
+  }
+  .arch-card-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 22px;
+  }
+  .arch-card-header .dots { display: flex; gap: 6px; }
+  .arch-card-header .dots span {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: var(--line-2);
+  }
+
+  .arch-svg { width: 100%; height: auto; display: block; }
+  .arch-svg .node-bg { fill: #161915; stroke: var(--line-2); stroke-width: 1; }
+  .arch-svg .node-bg-accent { fill: rgba(212, 255, 58, 0.06); stroke: var(--accent); stroke-width: 1; }
+  .arch-svg text { font-family: 'JetBrains Mono', monospace; fill: var(--ink); }
+  .arch-svg .label { font-size: 9px; fill: var(--ink-3); text-transform: uppercase; letter-spacing: 0.1em; }
+  .arch-svg .title { font-size: 12px; fill: var(--ink); font-weight: 600; }
+  .arch-svg .title-accent { fill: var(--accent); }
+  .arch-svg .flow { stroke: var(--accent); stroke-width: 1.5; fill: none; stroke-dasharray: 4 4; }
+  @keyframes dash { to { stroke-dashoffset: -16; } }
+  .arch-svg .flow { animation: dash 2.5s linear infinite; }
+
+  .arch-status {
+    margin-top: 18px;
+    display: flex; gap: 14px;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+  .arch-status .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+  }
+
+  /* ---- Stats strip ---- */
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .stat {
+    background: var(--bg);
+    padding: 32px 28px;
+    text-align: left;
+  }
+  .stat-num {
+    font-family: 'Bricolage Grotesque';
+    font-size: 38px; font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+  .stat-num em {
+    font-family: 'Instrument Serif';
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ---- Partner wall ---- */
+  .partners {
+    padding: 84px 0 64px;
+    background: rgba(15, 17, 16, 0.4);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    position: relative;
+  }
+  .partners-head {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .partners-head h3 {
+    font-family: 'Bricolage Grotesque';
+    font-size: clamp(26px, 3.2vw, 38px);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    margin-top: 14px;
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .partners-head h3 em {
+    font-family: 'Instrument Serif';
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+  .partners-head p {
+    color: var(--ink-2);
+    font-size: 15px;
+    max-width: 580px;
+    margin: 16px auto 0;
+    line-height: 1.55;
+  }
+  .partner-wall {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .partner-logo {
+    background: var(--bg);
+    height: 104px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 14px;
+    color: var(--ink-2);
+    transition: all 0.3s ease;
+    opacity: 0.85;
+  }
+  .partner-logo:hover {
+    background: var(--bg-2);
+    opacity: 1;
+    color: var(--ink);
+  }
+  .partner-logo .pl-mark {
+    width: 26px; height: 26px;
+    flex-shrink: 0;
+  }
+  .partner-logo .pl-text {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+  }
+  .partner-logo .pl-text.sm { font-size: 13px; }
+  .partner-logo .pl-text.serif {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 22px;
+  }
+
+  /* ---- Section headers ---- */
+  section.major { padding: 110px 0 30px; }
+  section.major h2 {
+    font-size: clamp(36px, 4.2vw, 56px);
+    font-weight: 600;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    max-width: 760px;
+    margin: 16px 0 22px;
+  }
+  section.major h2 em {
+    font-family: 'Instrument Serif';
+    font-weight: 400; font-style: italic;
+    color: var(--accent);
+  }
+  section.major .lede {
+    font-size: 18px; color: var(--ink-2);
+    max-width: 640px;
+    line-height: 1.55;
+  }
+  .section-head { margin-bottom: 56px; }
+
+  /* ---- Use cases ---- */
+  .usecases {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .usecase {
+    border: 1px solid var(--line-2);
+    border-radius: 12px;
+    padding: 28px;
+    background: var(--bg-2);
+    position: relative;
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+  .usecase:hover {
+    border-color: var(--accent-dim);
+    transform: translateY(-2px);
+  }
+  .usecase::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 40px; height: 1px;
+    background: var(--accent);
+    transition: width 0.3s ease;
+  }
+  .usecase:hover::before { width: 100%; }
+  .usecase .uc-icon {
+    width: 36px; height: 36px;
+    margin-bottom: 18px;
+    color: var(--accent);
+  }
+  .usecase h3 {
+    font-size: 18px; font-weight: 600;
+    letter-spacing: -0.015em;
+    margin-bottom: 8px;
+  }
+  .usecase p {
+    color: var(--ink-2); font-size: 14px;
+    line-height: 1.55;
+  }
+  .usecase .uc-tag {
+    margin-top: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* ---- How it works ---- */
+  .flow-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    position: relative;
+  }
+  .flow-step {
+    border: 1px solid var(--line-2);
+    border-radius: 12px;
+    padding: 24px 22px;
+    background: var(--bg-2);
+    position: relative;
+  }
+  .flow-step .step-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--ink-3);
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .flow-step .step-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+  }
+  .flow-step h4 {
+    font-size: 17px; font-weight: 600;
+    letter-spacing: -0.015em;
+    margin-bottom: 8px;
+  }
+  .flow-step p {
+    color: var(--ink-2); font-size: 13.5px;
+    line-height: 1.5;
+  }
+
+  /* ---- Pillars ---- */
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .pillar {
+    background: var(--bg);
+    padding: 32px 28px;
+    transition: background 0.3s;
+  }
+  .pillar:hover { background: var(--bg-2); }
+  .pillar-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    margin-bottom: 18px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .pillar-num::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+    opacity: 0.4;
+  }
+  .pillar h3 {
+    font-size: 19px; font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 10px;
+  }
+  .pillar p {
+    color: var(--ink-2); font-size: 14px;
+    line-height: 1.55;
+  }
+
+  /* ---- Pricing ---- */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    max-width: 940px;
+    margin: 0 auto;
+  }
+  .pricing-card {
+    border: 1px solid var(--line-2);
+    border-radius: 16px;
+    padding: 40px 36px;
+    background: var(--bg-2);
+    position: relative;
+    overflow: hidden;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+  }
+  .pricing-card.featured {
+    border: 1px solid var(--accent);
+    background: linear-gradient(180deg, rgba(212, 255, 58, 0.04), transparent 70%), var(--bg-2);
+  }
+  .pricing-card.featured::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 16px;
+    padding: 1px;
+    background: linear-gradient(135deg, var(--accent), transparent 50%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  .pricing-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    color: var(--ink-3);
+  }
+  .pricing-card.featured .pricing-tag { color: var(--accent); }
+  .pricing-name {
+    font-size: 22px; font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+  .pricing-blurb {
+    color: var(--ink-2); font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 28px;
+  }
+  .price-figure {
+    display: flex; align-items: baseline; gap: 6px;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+  .price-figure .currency {
+    font-size: 24px; color: var(--ink-2);
+    font-weight: 500;
+  }
+  .price-figure .amount {
+    font-family: 'Bricolage Grotesque';
+    font-size: 68px; font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .price-figure .amount.text {
+    font-size: 44px; line-height: 1.1;
+    font-family: 'Instrument Serif';
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+  .price-figure .per { color: var(--ink-3); font-size: 14px; }
+  .price-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--ink-3);
+    margin-bottom: 28px;
+  }
+  .price-includes {
+    list-style: none;
+    margin-bottom: 28px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    flex-grow: 1;
+  }
+  .price-includes li {
+    padding: 8px 0;
+    font-size: 14px; color: var(--ink-2);
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .price-includes li::before {
+    content: '→';
+    color: var(--accent);
+    font-family: 'JetBrains Mono', monospace;
+    flex-shrink: 0;
+  }
+  .pricing-card .btn { width: 100%; justify-content: center; }
+
+  /* ---- Final CTA ---- */
+  .final-cta {
+    text-align: center;
+    padding: 120px 0 90px;
+    border-top: 1px solid var(--line);
+    margin-top: 80px;
+    position: relative;
+  }
+  .final-cta::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: 50%; transform: translateX(-50%);
+    width: 240px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+  .final-cta h2 {
+    font-size: clamp(40px, 5vw, 64px);
+    font-weight: 600;
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    margin-bottom: 20px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .final-cta h2 em {
+    font-family: 'Instrument Serif';
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+  .final-cta p {
+    color: var(--ink-2); font-size: 18px;
+    max-width: 560px; margin: 0 auto 40px;
+  }
+
+  /* ---- Footer ---- */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 32px 0;
+    color: var(--ink-3);
+    font-size: 13px;
+  }
+  footer .row {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px;
+  }
+  footer .links { display: flex; gap: 24px; }
+  footer a { color: var(--ink-3); text-decoration: none; }
+  footer a:hover { color: var(--ink); }
+
+  .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ---- Modal ---- */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 6, 5, 0.78);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 60px 20px;
+    overflow-y: auto;
+  }
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .modal {
+    background: var(--bg-2);
+    border: 1px solid var(--line-2);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 760px;
+    position: relative;
+    overflow: hidden;
+    transform: translateY(24px);
+    opacity: 0;
+    transition: transform 0.45s cubic-bezier(.16,1,.3,1), opacity 0.3s ease;
+    box-shadow: 0 50px 120px -30px rgba(0,0,0,0.8);
+  }
+  .modal-overlay.open .modal {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  .modal::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  }
+  .modal-header {
+    padding: 36px 44px 0;
+    position: relative;
+  }
+  .modal-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .modal-header h2 {
+    font-family: 'Bricolage Grotesque';
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+    margin-bottom: 10px;
+  }
+  .modal-header h2 em {
+    font-family: 'Instrument Serif';
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+  .modal-header p {
+    color: var(--ink-2);
+    font-size: 15px;
+    line-height: 1.5;
+    margin-bottom: 28px;
+    max-width: 540px;
+  }
+  .modal-close {
+    position: absolute;
+    top: 22px; right: 22px;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--bg-3);
+    border: 1px solid var(--line-2);
+    color: var(--ink-2);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-family: inherit;
+    font-size: 18px;
+    line-height: 1;
+  }
+  .modal-close:hover {
+    color: var(--ink);
+    border-color: var(--ink-3);
+    transform: rotate(90deg);
+  }
+  .modal-body {
+    padding: 0 44px 40px;
+  }
+  .form-section {
+    margin-top: 32px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+  }
+  .form-section:first-of-type {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+  .form-section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .form-section-title::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .form-grid.full {
+    grid-template-columns: 1fr;
+  }
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+  .form-field.span-2 { grid-column: span 2; }
+  .form-field label {
+    font-size: 13px;
+    color: var(--ink-2);
+    font-weight: 500;
+    letter-spacing: -0.005em;
+  }
+  .form-field label .req {
+    color: var(--accent);
+    margin-left: 2px;
+  }
+  .form-field input,
+  .form-field select,
+  .form-field textarea {
+    background: var(--bg);
+    border: 1px solid var(--line-2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--ink);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+  }
+  .form-field input:focus,
+  .form-field select:focus,
+  .form-field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(212, 255, 58, 0.12);
+  }
+  .form-field input::placeholder,
+  .form-field textarea::placeholder {
+    color: var(--ink-3);
+  }
+  .form-field textarea {
+    resize: vertical;
+    min-height: 88px;
+    line-height: 1.5;
+  }
+  .form-field select {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7066' d='M6 8.5L1.5 4h9z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+  }
+  .form-submit-row {
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .form-submit {
+    width: 100%;
+    padding: 16px;
+    font-size: 15px;
+    justify-content: center;
+  }
+  .form-footnote {
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-3);
+    line-height: 1.5;
+  }
+
+  /* Success state */
+  .modal-success {
+    padding: 80px 44px 64px;
+    text-align: center;
+    display: none;
+  }
+  .modal-success.show { display: block; animation: fadeIn 0.5s ease; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .success-icon {
+    width: 76px; height: 76px;
+    border: 2px solid var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 28px;
+    background: rgba(212, 255, 58, 0.1);
+    position: relative;
+  }
+  .success-icon::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px solid rgba(212, 255, 58, 0.25);
+    animation: ping 2s cubic-bezier(0,0,0.2,1) infinite;
+  }
+  @keyframes ping {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.3); opacity: 0; }
+  }
+  .success-icon svg { stroke: var(--accent); }
+  .modal-success h3 {
+    font-family: 'Bricolage Grotesque';
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    margin-bottom: 14px;
+    line-height: 1.1;
+  }
+  .modal-success h3 em {
+    font-family: 'Instrument Serif';
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+  .modal-success p {
+    color: var(--ink-2);
+    font-size: 16px;
+    max-width: 440px;
+    margin: 0 auto 24px;
+    line-height: 1.55;
+  }
+  .ref-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink-3);
+    padding: 8px 14px;
+    border: 1px dashed var(--line-2);
+    border-radius: 6px;
+    display: inline-block;
+    margin-bottom: 32px;
+    letter-spacing: 0.05em;
+  }
+  .ref-num span { color: var(--accent); }
+  .modal-success .btn { display: inline-flex; }
+
+  body.modal-locked { overflow: hidden; }
+
+  @media (max-width: 960px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+    .pillars, .usecases { grid-template-columns: 1fr; }
+    .flow-steps { grid-template-columns: 1fr 1fr; }
+    .stats-strip { grid-template-columns: 1fr 1fr; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .partner-wall { grid-template-columns: repeat(3, 1fr); }
+    .nav-links a:not(.btn) { display: none; }
+    section.major { padding: 80px 0 20px; }
+    .hero { padding: 64px 0 56px; }
+  }
+  @media (max-width: 560px) {
+    .wrap { padding: 0 20px; }
+    .flow-steps, .stats-strip { grid-template-columns: 1fr; }
+    .partner-wall { grid-template-columns: repeat(2, 1fr); }
+    .partner-logo { height: 88px; }
+    .price-figure .amount { font-size: 56px; }
+    .pricing-card { padding: 32px 24px; }
+    .modal-overlay { padding: 20px 12px; }
+    .modal-header, .modal-body { padding-left: 24px; padding-right: 24px; }
+    .modal-header h2 { font-size: 24px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-field.span-2 { grid-column: span 1; }
+    .modal-success { padding: 56px 24px 48px; }
+    .modal-success h3 { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav>
+  <div class="wrap row">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      qoppy
+    </div>
+    <div class="nav-links">
+      <a href="#capabilities">Capabilities</a>
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="/login" class="btn btn-primary">Sign in →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="hero-eyebrow">
+        <div class="pulse"></div>
+        <span class="mono">Enterprise Automation · Microsoft · Google · NVIDIA</span>
+      </div>
+      <h1>
+        Enterprise<br/>
+        automation, <em>shipped<br/>in days.</em>
+      </h1>
+      <p class="hero-sub">
+        Qoppy is the platform enterprises use to design, deploy, and run
+        AI-powered workflows at scale — from approvals and document processing
+        to full operational pipelines. Built with Microsoft. Runs on your stack.
+      </p>
+      <div class="hero-actions">
+        <a href="#contact" class="btn btn-primary lg">Contact sales →</a>
+        <a href="#capabilities" class="btn btn-ghost lg">See what you can build</a>
+      </div>
+    </div>
+
+    <div class="arch-card">
+      <div class="arch-card-header">
+        <span class="mono">workflow.live</span>
+        <div class="dots"><span></span><span></span><span></span></div>
+      </div>
+      <svg class="arch-svg" viewBox="0 0 460 320" xmlns="http://www.w3.org/2000/svg">
+        <rect x="14" y="20" width="130" height="50" rx="8" class="node-bg" />
+        <text x="26" y="40" class="label">trigger</text>
+        <text x="26" y="56" class="title">Email · Form · API</text>
+
+        <rect x="160" y="14" width="140" height="62" rx="8" class="node-bg-accent" />
+        <text x="174" y="34" class="label" style="fill: var(--accent);">qoppy ai</text>
+        <text x="174" y="52" class="title title-accent">Decision engine</text>
+        <text x="174" y="68" class="label">classify · extract · route</text>
+
+        <rect x="316" y="20" width="130" height="50" rx="8" class="node-bg" />
+        <text x="328" y="40" class="label">action</text>
+        <text x="328" y="56" class="title">Approve / Sync</text>
+
+        <text x="14" y="118" class="label">enterprise integrations</text>
+
+        <rect x="14" y="130" width="100" height="42" rx="6" class="node-bg" />
+        <text x="26" y="156" class="title">Microsoft 365</text>
+
+        <rect x="124" y="130" width="100" height="42" rx="6" class="node-bg" />
+        <text x="136" y="156" class="title">Salesforce</text>
+
+        <rect x="234" y="130" width="100" height="42" rx="6" class="node-bg" />
+        <text x="246" y="156" class="title">SAP / Oracle</text>
+
+        <rect x="344" y="130" width="100" height="42" rx="6" class="node-bg" />
+        <text x="356" y="156" class="title">Your APIs</text>
+
+        <text x="14" y="206" class="label">deployed on</text>
+
+        <rect x="14" y="218" width="430" height="80" rx="10" class="node-bg" />
+        <text x="32" y="244" class="title">Your VPS · VPC · On-prem</text>
+        <text x="32" y="262" class="label">runtime executes inside your perimeter</text>
+        <text x="32" y="282" class="label" style="fill: var(--accent);">⏵ fully isolated execution environment</text>
+
+        <path d="M 144 45 L 160 45" class="flow" />
+        <path d="M 300 45 L 316 45" class="flow" />
+        <path d="M 230 76 L 230 130" class="flow" />
+        <path d="M 230 172 L 230 218" class="flow" />
+      </svg>
+      <div class="arch-status">
+        <div class="dot"></div>
+        <span>3 workflows running · 1,284 actions today · 99.99% uptime</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STATS STRIP ============ -->
+<div class="stats-strip">
+  <div class="stat">
+    <div class="stat-num">10<em>×</em></div>
+    <div class="stat-label">Faster than custom dev</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">200<em>+</em></div>
+    <div class="stat-label">Pre-built connectors</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">5<em>days</em></div>
+    <div class="stat-label">Avg. time to first workflow</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">99.99<em>%</em></div>
+    <div class="stat-label">Runtime uptime SLA</div>
+  </div>
+</div>
+
+<!-- ============ PARTNERS WALL ============ -->
+<section class="partners">
+  <div class="wrap">
+    <div class="partners-head">
+      <span class="mono accent">// partnerships</span>
+      <h3>Built with the world's leading platforms — <em>trusted by the enterprises</em> that run on them.</h3>
+      <p>Strategic technology partnerships and deep integrations across cloud, AI infrastructure, and global financial services.</p>
+    </div>
+
+    <div class="partner-wall">
+      <!-- Microsoft -->
+      <div class="partner-logo" title="Microsoft">
+        <svg class="pl-mark" viewBox="0 0 23 23" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="1" width="10" height="10" fill="#F25022"/>
+          <rect x="12" y="1" width="10" height="10" fill="#7FBA00"/>
+          <rect x="1" y="12" width="10" height="10" fill="#00A4EF"/>
+          <rect x="12" y="12" width="10" height="10" fill="#FFB900"/>
+        </svg>
+        <span class="pl-text">Microsoft</span>
+      </div>
+
+      <!-- Google Cloud -->
+      <div class="partner-logo" title="Google Cloud">
+        <svg class="pl-mark" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21.6 12.227c0-.709-.064-1.39-.182-2.045H12v3.868h5.382a4.6 4.6 0 0 1-1.996 3.018v2.51h3.232c1.891-1.742 2.982-4.305 2.982-7.351z" fill="#4285F4"/>
+          <path d="M12 22c2.7 0 4.964-.895 6.618-2.423l-3.232-2.509c-.895.6-2.04.955-3.386.955-2.605 0-4.81-1.76-5.595-4.123H3.064v2.59A9.996 9.996 0 0 0 12 22z" fill="#34A853"/>
+          <path d="M6.405 13.9a6.013 6.013 0 0 1 0-3.8V7.51H3.064a9.996 9.996 0 0 0 0 8.98l3.341-2.59z" fill="#FBBC04"/>
+          <path d="M12 5.977c1.468 0 2.786.504 3.823 1.496l2.868-2.868C16.959 2.99 14.695 2 12 2A9.996 9.996 0 0 0 3.064 7.51l3.341 2.59C7.19 7.737 9.395 5.977 12 5.977z" fill="#EA4335"/>
+        </svg>
+        <span class="pl-text">Google Cloud</span>
+      </div>
+
+      <!-- NVIDIA -->
+      <div class="partner-logo" title="NVIDIA">
+        <svg class="pl-mark" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="16" cy="16" rx="13" ry="8" fill="none" stroke="#76B900" stroke-width="3"/>
+          <circle cx="16" cy="16" r="4" fill="#76B900"/>
+        </svg>
+        <span class="pl-text" style="color:#76B900;">NVIDIA</span>
+      </div>
+
+      <!-- HSBC -->
+      <div class="partner-logo" title="HSBC">
+        <svg class="pl-mark" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="2,5 16,16 30,5" fill="#DB0011"/>
+          <polygon points="2,27 16,16 30,27" fill="#DB0011"/>
+        </svg>
+        <span class="pl-text">HSBC</span>
+      </div>
+
+      <!-- JPMorgan -->
+      <div class="partner-logo" title="JPMorgan">
+        <span class="pl-text" style="color:#1B5E9E; font-weight:700; font-size:17px; letter-spacing:-0.02em;">JPMorgan</span>
+      </div>
+
+      <!-- Standard Chartered -->
+      <div class="partner-logo" title="Standard Chartered">
+        <svg class="pl-mark" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="11" cy="16" r="7" fill="#0473EA"/>
+          <circle cx="21" cy="16" r="7" fill="#38D200" opacity="0.85"/>
+        </svg>
+        <span class="pl-text sm">Standard Chartered</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CAPABILITIES ============ -->
+<section class="major" id="capabilities">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="mono accent">// what you can build</span>
+      <h2>The work your teams shouldn't <em>be doing manually.</em></h2>
+      <p class="lede">
+        Qoppy gives operations, finance, IT, and HR teams a single platform to
+        automate the workflows that actually move the business — with AI in the
+        loop where it matters.
+      </p>
+    </div>
+
+    <div class="usecases">
+      <div class="usecase">
+        <svg class="uc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+        </svg>
+        <h3>Document processing</h3>
+        <p>Invoices, contracts, KYC, claims. Extract, classify, route, and post — without humans in the loop until something genuinely needs them.</p>
+        <div class="uc-tag">finance · legal · ops</div>
+      </div>
+
+      <div class="usecase">
+        <svg class="uc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M9 11l3 3L22 4"/>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+        </svg>
+        <h3>Approvals &amp; reviews</h3>
+        <p>Multi-step approvals across Microsoft 365, Slack, and email — with AI pre-checks, escalation rules, and full audit trails.</p>
+        <div class="uc-tag">procurement · hr · it</div>
+      </div>
+
+      <div class="usecase">
+        <svg class="uc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <ellipse cx="12" cy="5" rx="9" ry="3"/>
+          <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/>
+        </svg>
+        <h3>Data pipelines</h3>
+        <p>Sync customers, orders, and tickets across SAP, Salesforce, and your warehouse. Reconciliation, deduplication, enrichment — automated.</p>
+        <div class="uc-tag">data · analytics</div>
+      </div>
+
+      <div class="usecase">
+        <svg class="uc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="8.5" cy="7" r="4"/>
+          <path d="M20 8v6M23 11h-6"/>
+        </svg>
+        <h3>Onboarding &amp; offboarding</h3>
+        <p>From day-one provisioning to clean offboarding — accounts, licences, permissions, equipment, and access reviews handled in one flow.</p>
+        <div class="uc-tag">hr · it · compliance</div>
+      </div>
+
+      <div class="usecase">
+        <svg class="uc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M3 3v18h18"/>
+          <path d="M18 17V9M13 17V5M8 17v-3"/>
+        </svg>
+        <h3>Reporting &amp; compliance</h3>
+        <p>Scheduled, audit-ready reports built from your live systems. Regulatory filings, SLA dashboards, internal audits — generated and delivered.</p>
+        <div class="uc-tag">finance · risk · audit</div>
+      </div>
+
+      <div class="usecase">
+        <svg class="uc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <h3>Customer operations</h3>
+        <p>Triage tickets, draft responses, route escalations, summarise conversations. Your CX team spends time on the cases that need a human.</p>
+        <div class="uc-tag">support · success</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="major" id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="mono accent">// pipeline</span>
+      <h2>From idea to production <em>in four steps.</em></h2>
+      <p class="lede">
+        Design in the visual builder, deploy to your environment, connect to
+        your stack, ship. No long procurement cycle. No multi-quarter rollout.
+      </p>
+    </div>
+
+    <div class="flow-steps">
+      <div class="flow-step">
+        <div class="step-tag"><div class="step-dot"></div>step.01</div>
+        <h4>Design</h4>
+        <p>Build workflows visually. Triggers, branches, AI steps, integrations — drag, drop, configure.</p>
+      </div>
+      <div class="flow-step">
+        <div class="step-tag"><div class="step-dot"></div>step.02</div>
+        <h4>Deploy</h4>
+        <p>One-command install of the Qoppy runtime on your VPS, Docker, or Kubernetes cluster.</p>
+      </div>
+      <div class="flow-step">
+        <div class="step-tag"><div class="step-dot"></div>step.03</div>
+        <h4>Connect</h4>
+        <p>Authenticate to Microsoft 365, Salesforce, SAP, or any custom API. Tokens stay in your runtime.</p>
+      </div>
+      <div class="flow-step">
+        <div class="step-tag"><div class="step-dot"></div>step.04</div>
+        <h4>Run</h4>
+        <p>Workflows execute inside your environment. Monitor, iterate, scale — all from the same dashboard.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BUILT FOR ENTERPRISE ============ -->
+<section class="major">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="mono accent">// built for enterprise</span>
+      <h2>Production-grade from <em>day one.</em></h2>
+      <p class="lede">
+        Speed without compromise. Qoppy was designed for the controls,
+        integrations, and reliability that enterprise IT actually requires.
+      </p>
+    </div>
+
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar-num">01 / scale</div>
+        <h3>Built for volume</h3>
+        <p>Run thousands of concurrent workflows on your own infrastructure. Horizontal scaling, queue-based execution, no shared-tenant limits.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-num">02 / integrations</div>
+        <h3>200+ connectors</h3>
+        <p>Native support for Microsoft 365, Graph API, Salesforce, SAP, Oracle, ServiceNow, and a generic REST/SOAP/database connector for everything else.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-num">03 / governance</div>
+        <h3>SSO, RBAC, audit logs</h3>
+        <p>Azure AD / Entra integration, role-based access, complete audit trail of every workflow run, version control, and approval gates.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-num">04 / deployment</div>
+        <h3>Your infrastructure</h3>
+        <p>Cloud, on-prem, or air-gapped. The runtime ships as a container — deploy where your security, latency, and compliance needs require.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-num">05 / data control</div>
+        <h3>Data stays with you</h3>
+        <p>Workflows execute inside your perimeter. Qoppy provides the platform and the AI endpoint — payloads never persist on our infrastructure.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-num">06 / reliability</div>
+        <h3>99.99% uptime SLA</h3>
+        <p>Multi-region failover for the control plane. Your runtime is yours, so its availability is yours to architect — and we help you design it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRICING ============ -->
+<section class="major" id="pricing">
+  <div class="wrap">
+    <div class="section-head" style="text-align:center;">
+      <span class="mono accent">// pricing</span>
+      <h2 style="margin-left:auto;margin-right:auto;">Simple, predictable, <em>per-licence.</em></h2>
+      <p class="lede" style="margin-left:auto;margin-right:auto;">
+        Start with the standard plan and scale to enterprise when you're ready
+        for dedicated infrastructure, custom SLAs, and white-glove support.
+      </p>
+    </div>
+
+    <div class="pricing-grid">
+      <!-- Standard -->
+      <div class="pricing-card featured">
+        <div class="pricing-tag">— Standard</div>
+        <div class="pricing-name">For teams shipping their first automations</div>
+        <div class="pricing-blurb">Everything you need to design, deploy, and run production workflows at enterprise quality.</div>
+
+        <div class="price-figure">
+          <span class="currency">$</span>
+          <span class="amount">199</span>
+          <span class="per">/ licence / month</span>
+        </div>
+        <div class="price-meta">billed annually · min. 5 seats</div>
+
+        <ul class="price-includes">
+          <li>Unlimited workflows on your runtime</li>
+          <li>Full Qoppy AI endpoint access</li>
+          <li>200+ enterprise connectors</li>
+          <li>Microsoft 365 &amp; Graph API native</li>
+          <li>SSO, audit logs, role-based access</li>
+          <li>Standard support · 24h response</li>
+        </ul>
+
+        <a href="#contact" class="btn btn-primary lg">Contact sales →</a>
+      </div>
+
+      <!-- Enterprise -->
+      <div class="pricing-card">
+        <div class="pricing-tag">— Enterprise</div>
+        <div class="pricing-name">For organisations rolling out at scale</div>
+        <div class="pricing-blurb">Custom pricing, dedicated infrastructure, and a deployment team that works alongside yours.</div>
+
+        <div class="price-figure">
+          <span class="amount text">Let's talk</span>
+        </div>
+        <div class="price-meta">volume pricing · custom contracts · annual</div>
+
+        <ul class="price-includes">
+          <li>Everything in Standard</li>
+          <li>Dedicated AI endpoint + private model options</li>
+          <li>On-prem &amp; air-gapped deployment</li>
+          <li>Custom integrations &amp; SSO providers</li>
+          <li>99.99% uptime SLA + named CSM</li>
+          <li>24/7 priority support · 1h response</li>
+          <li>Onboarding &amp; solution architecture team</li>
+        </ul>
+
+        <a href="#contact" class="btn btn-ghost lg">Talk to enterprise →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FINAL CTA ============ -->
+<section class="final-cta" id="contact">
+  <div class="wrap">
+    <span class="mono accent">// let's build</span>
+    <h2 style="margin-top:14px;">Show us the workflow. <em>We'll show you the build.</em></h2>
+    <p>Tell us about a process you'd love to automate. We'll walk you through how it would look in Qoppy — usually in a 30-minute call.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a href="mailto:sales@qoppy.com" class="btn btn-primary lg">sales@qoppy.com</a>
+      <a href="#" class="btn btn-ghost lg" id="open-demo">Book a demo →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap row">
+    <div class="brand" style="font-size:18px;">
+      <div class="brand-mark" style="width:22px;height:22px;"></div>
+      qoppy
+    </div>
+    <div class="links">
+      <a href="#capabilities">Capabilities</a>
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <div class="mono">© 2026 Qoppy · Enterprise Partner Program</div>
+  </div>
+</footer>
+
+<!-- ============ DEMO MODAL ============ -->
+<div class="modal-overlay" id="demo-modal" aria-hidden="true">
+  <div class="modal" role="dialog" aria-labelledby="demo-title">
+    <button class="modal-close" id="demo-close" aria-label="Close">×</button>
+
+    <!-- Form view -->
+    <div id="demo-form-view">
+      <div class="modal-header">
+        <div class="modal-eyebrow">// book a demo</div>
+        <h2 id="demo-title">Tell us about <em>what you'd build.</em></h2>
+        <p>The more context you give us, the more targeted your demo will be. We'll come back with a tailored walkthrough — usually within 2–3 business days.</p>
+      </div>
+
+      <div class="modal-body">
+        <form id="demo-form" novalidate>
+
+          <!-- Section 1: About you -->
+          <div class="form-section">
+            <div class="form-section-title">01 / About you</div>
+            <div class="form-grid">
+              <div class="form-field">
+                <label>Full name<span class="req">*</span></label>
+                <input type="text" name="name" placeholder="Jane Doe" required />
+              </div>
+              <div class="form-field">
+                <label>Work email<span class="req">*</span></label>
+                <input type="email" name="email" placeholder="jane@company.com" required />
+              </div>
+              <div class="form-field">
+                <label>Job title<span class="req">*</span></label>
+                <input type="text" name="title" placeholder="Director of Operations" required />
+              </div>
+              <div class="form-field">
+                <label>Phone <span style="color:var(--ink-3); font-weight:400;">(optional)</span></label>
+                <input type="tel" name="phone" placeholder="+1 555 000 1234" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Your company -->
+          <div class="form-section">
+            <div class="form-section-title">02 / Your company</div>
+            <div class="form-grid">
+              <div class="form-field">
+                <label>Company name<span class="req">*</span></label>
+                <input type="text" name="company" placeholder="Acme Inc" required />
+              </div>
+              <div class="form-field">
+                <label>Company website</label>
+                <input type="url" name="website" placeholder="https://acme.com" />
+              </div>
+              <div class="form-field">
+                <label>Industry<span class="req">*</span></label>
+                <select name="industry" required>
+                  <option value="">Select industry…</option>
+                  <option>Banking &amp; Financial Services</option>
+                  <option>Insurance</option>
+                  <option>Manufacturing</option>
+                  <option>Healthcare &amp; Pharma</option>
+                  <option>Technology &amp; Software</option>
+                  <option>Retail &amp; E-commerce</option>
+                  <option>Logistics &amp; Supply Chain</option>
+                  <option>Energy &amp; Utilities</option>
+                  <option>Government &amp; Public Sector</option>
+                  <option>Professional Services</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Company size<span class="req">*</span></label>
+                <select name="size" required>
+                  <option value="">Select size…</option>
+                  <option>1–50 employees</option>
+                  <option>51–200 employees</option>
+                  <option>201–1,000 employees</option>
+                  <option>1,001–5,000 employees</option>
+                  <option>5,000+ employees</option>
+                </select>
+              </div>
+              <div class="form-field span-2">
+                <label>Country / region</label>
+                <input type="text" name="country" placeholder="United Kingdom" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3: Your project -->
+          <div class="form-section">
+            <div class="form-section-title">03 / Your automation</div>
+            <div class="form-grid">
+              <div class="form-field">
+                <label>Seats interested in</label>
+                <select name="seats">
+                  <option value="">Estimated seats…</option>
+                  <option>Less than 10</option>
+                  <option>10–50</option>
+                  <option>50–200</option>
+                  <option>200–500</option>
+                  <option>500+</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Decision timeline</label>
+                <select name="timeline">
+                  <option value="">When do you need to decide?</option>
+                  <option>Immediate (within 30 days)</option>
+                  <option>1–3 months</option>
+                  <option>3–6 months</option>
+                  <option>6–12 months</option>
+                  <option>Just exploring</option>
+                </select>
+              </div>
+              <div class="form-field span-2">
+                <label>Primary use case<span class="req">*</span></label>
+                <textarea name="usecase" placeholder="e.g. We need to automate vendor invoice processing across SAP and Microsoft 365 — currently 4 FTEs handle this manually." required></textarea>
+              </div>
+              <div class="form-field span-2">
+                <label>Tools / systems you'd need to integrate with</label>
+                <input type="text" name="tools" placeholder="Microsoft 365, SAP, Salesforce, ServiceNow…" />
+              </div>
+              <div class="form-field">
+                <label>Annual budget range</label>
+                <select name="budget">
+                  <option value="">Select range…</option>
+                  <option>Less than $25,000</option>
+                  <option>$25,000 – $100,000</option>
+                  <option>$100,000 – $500,000</option>
+                  <option>$500,000 – $1M</option>
+                  <option>$1M+</option>
+                  <option>Not yet defined</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label>Deployment preference</label>
+                <select name="deployment">
+                  <option value="">Where will it run?</option>
+                  <option>Cloud VPS</option>
+                  <option>Private cloud / VPC</option>
+                  <option>On-premise</option>
+                  <option>Air-gapped</option>
+                  <option>Not sure yet</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 4: One more thing -->
+          <div class="form-section">
+            <div class="form-section-title">04 / One more thing</div>
+            <div class="form-grid">
+              <div class="form-field span-2">
+                <label>How did you hear about us?</label>
+                <select name="source">
+                  <option value="">Select…</option>
+                  <option>Microsoft / Microsoft Partner referral</option>
+                  <option>Google search</option>
+                  <option>LinkedIn</option>
+                  <option>Industry event / conference</option>
+                  <option>Word of mouth</option>
+                  <option>Press / news article</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-field span-2">
+                <label>Anything else we should know?</label>
+                <textarea name="notes" placeholder="Compliance requirements, internal stakeholders, existing tooling, anything that helps us prepare a more useful demo."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-submit-row">
+            <button type="submit" class="btn btn-primary form-submit">Submit request →</button>
+            <p class="form-footnote">By submitting, you agree to be contacted by our sales team. We'll never share your details with third parties.</p>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Success view -->
+    <div class="modal-success" id="demo-success">
+      <div class="success-icon">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <h3>Response received. <em>Thank you.</em></h3>
+      <p>We've got your details and a member of our team will get back to you within <strong style="color: var(--ink);">2–3 business days</strong> with a tailored walkthrough.</p>
+      <div class="ref-num">REF · QPY-<span id="ref-number">000000</span></div>
+      <br/>
+      <button class="btn btn-ghost" id="demo-success-close">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Reveal animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('section, .pillar, .flow-step, .pricing-card, .arch-card, .usecase, .stat').forEach(el => {
+    el.classList.add('reveal');
+    observer.observe(el);
+  });
+
+  // ---- Demo modal ----
+  const modal = document.getElementById('demo-modal');
+  const openBtn = document.getElementById('open-demo');
+  const closeBtn = document.getElementById('demo-close');
+  const successCloseBtn = document.getElementById('demo-success-close');
+  const form = document.getElementById('demo-form');
+  const formView = document.getElementById('demo-form-view');
+  const successView = document.getElementById('demo-success');
+  const refNum = document.getElementById('ref-number');
+
+  function openModal() {
+    modal.classList.add('open');
+    document.body.classList.add('modal-locked');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    document.body.classList.remove('modal-locked');
+    modal.setAttribute('aria-hidden', 'true');
+    // Reset to form view after fade out
+    setTimeout(() => {
+      formView.style.display = '';
+      successView.classList.remove('show');
+      form.reset();
+    }, 350);
+  }
+
+  openBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    openModal();
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+  successCloseBtn.addEventListener('click', closeModal);
+
+  // Close on backdrop click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+  });
+
+  // Submit handler — auto-acknowledge with success view
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    // Generate a reference number for the user
+    const ref = Math.floor(100000 + Math.random() * 900000);
+    refNum.textContent = ref;
+    formView.style.display = 'none';
+    successView.classList.add('show');
+    // Scroll modal back to top so success is visible
+    modal.scrollTop = 0;
+  });
+</script>
+
+</body>
+</html>
